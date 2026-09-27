@@ -46,3 +46,16 @@ void Galil::DigitalOutput(uint16_t value) {
 	char buf[1024];
 	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
+
+void Galil::DigitalByteOutput(bool bank, uint8_t value) {
+	std::string cmd = "OP ";
+
+	if (bank) {
+		cmd += ",";
+	}
+	
+	cmd += std::to_string(value) + ";";
+
+	char buf[1024];
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+}
