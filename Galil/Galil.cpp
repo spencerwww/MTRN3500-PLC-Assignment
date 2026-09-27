@@ -59,3 +59,18 @@ void Galil::DigitalByteOutput(bool bank, uint8_t value) {
 	char buf[1024];
 	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
+
+void Galil::DigitalBitOutput(bool val, uint8_t bit) {
+	std::string cmd;
+	if (val) {
+		cmd = "SB ";
+	}
+	else {
+		cmd = "CB ";
+	}
+
+	cmd += std::to_string(bit) + ";";
+
+	char buf[1024];
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+}
