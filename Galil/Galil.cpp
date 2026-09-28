@@ -149,3 +149,10 @@ void Galil::AnalogInputRange(uint8_t channel, uint8_t range) {
 	char buf[1024];
 	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
+
+//ENCODER
+void Galil::WriteEncoder() {
+	std::string cmd = "WE 0;";
+	char buf[1024];
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+}
