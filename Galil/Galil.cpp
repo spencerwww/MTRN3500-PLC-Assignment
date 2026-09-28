@@ -123,3 +123,12 @@ bool Galil::CheckSuccessfulWrite() {
 	}
 	return false;
 }
+
+float Galil::AnalogInput(uint8_t channel) {
+	float res = 0.0;
+	std::string cmd = "MG @AN[" + std::to_string(channel) + "];";
+	char buf[1024];
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+
+	return (float)atof(buf);
+}
