@@ -105,3 +105,11 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 
 	return res;
 }
+
+bool Galil::DigitalBitInput(uint8_t bit) {
+	std::string cmd = "MG @IN[" + std::to_string(bit) + "];";
+	char buf[1024];
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	
+	return atoi(buf);
+}
