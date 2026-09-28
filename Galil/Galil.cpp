@@ -10,6 +10,7 @@ Galil::Galil() {
 	ControlParameters[1] = 0.0; // Ki
 	ControlParameters[2] = 0.0; // Kd
 	setPoint = 0;
+	response = 0;
 }
 
 Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
@@ -20,6 +21,7 @@ Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 	ControlParameters[1] = 0.0; // Ki
 	ControlParameters[2] = 0.0; // Kd
 	setPoint = 0;
+	response = 0;
 }
 
 Galil::Galil(const Galil& other) {
@@ -30,6 +32,7 @@ Galil::Galil(const Galil& other) {
 	ControlParameters[1] = other.ControlParameters[1];
 	ControlParameters[2] = other.ControlParameters[2];
 	setPoint = other.setPoint;
+	response = other.response;
 }
 
 Galil::~Galil() {
@@ -44,7 +47,7 @@ void Galil::DigitalOutput(uint16_t value) {
 	uint16_t low = value & 0x00FF;
 	std::string cmd = "OP " + std::to_string(low) + "," + std::to_string(high) + ";";
 	char buf[1024];
-	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
 
 void Galil::DigitalByteOutput(bool bank, uint8_t value) {
@@ -57,7 +60,7 @@ void Galil::DigitalByteOutput(bool bank, uint8_t value) {
 	cmd += std::to_string(value) + ";";
 
 	char buf[1024];
-	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
 
 void Galil::DigitalBitOutput(bool val, uint8_t bit) {
@@ -72,7 +75,7 @@ void Galil::DigitalBitOutput(bool val, uint8_t bit) {
 	cmd += std::to_string(bit) + ";";
 
 	char buf[1024];
-	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
 
 // DIGITAL INPUTS
@@ -81,7 +84,7 @@ uint16_t Galil::DigitalInput() {
 	for (uint8_t i = 0; i < 16; i++) {
 		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
 		char buf[1024];
-		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+		response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 		uint8_t val = atoi(buf) << i;
 
 		res = res | val;
@@ -97,7 +100,7 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 	for (uint8_t i = start; i < end; i++) {
 		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
 		char buf[1024];
-		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+		response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 		uint8_t val = atoi(buf) << i;
 
 		res = res | val;
@@ -109,7 +112,14 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 bool Galil::DigitalBitInput(uint8_t bit) {
 	std::string cmd = "MG @IN[" + std::to_string(bit) + "];";
 	char buf[1024];
-	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 	
 	return atoi(buf);
+}
+
+bool Galil::CheckSuccessfulWrite() {
+	if (response == 0) {
+		return true;
+	}
+	return false;
 }
