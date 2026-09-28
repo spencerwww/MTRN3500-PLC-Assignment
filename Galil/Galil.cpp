@@ -156,3 +156,11 @@ void Galil::WriteEncoder() {
 	char buf[1024];
 	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
+
+int Galil::ReadEncoder() {
+	std::string cmd = "QE 0;";
+	char buf[1024];
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+
+	return atoi(buf);
+}
