@@ -197,3 +197,19 @@ void Galil::setKd(double gain) {
 double Galil::getKd() {
 	return ControlParameters[2];
 }
+
+// OPERATOR OVERLOADS
+
+std::ostream& operator<<(std::ostream& output, Galil& galil) {
+	EmbeddedFunctions* functions = galil.Functions;
+	GCon g = galil.g;
+	char info[1024];
+	char ver[1024];
+	functions->GInfo(g, info, sizeof(info));
+	functions->GVersion(ver, sizeof(ver));
+
+	output << info << std::endl << std::endl;
+	output << ver << std::endl << std::endl;
+
+	return output;
+}
