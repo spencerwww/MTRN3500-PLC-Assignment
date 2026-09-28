@@ -79,7 +79,22 @@ void Galil::DigitalBitOutput(bool val, uint8_t bit) {
 uint16_t Galil::DigitalInput() {
 	uint16_t res = 0;
 	for (uint8_t i = 0; i < 16; i++) {
+		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
+		char buf[1024];
+		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+		uint8_t val = atoi(buf) << i;
 
+		res = res | val;
+	}
+
+	return res;
+}
+
+uint8_t Galil::DigitalByteInput(bool bank) {
+	uint8_t res = 0;
+	uint8_t start = bank * 7;
+	uint8_t end = (bank + 1) * 8;
+	for (uint8_t i = start; i < end; i++) {
 		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
 		char buf[1024];
 		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
