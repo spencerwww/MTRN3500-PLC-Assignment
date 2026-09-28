@@ -118,6 +118,7 @@ bool Galil::DigitalBitInput(uint8_t bit) {
 }
 
 bool Galil::CheckSuccessfulWrite() {
+	// TODO: Confirm intended behaviour on startup and rejected analog output
 	if (response == 0) {
 		return true;
 	}
@@ -131,4 +132,20 @@ float Galil::AnalogInput(uint8_t channel) {
 	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 
 	return (float)atof(buf);
+}
+
+void Galil::AnalogOutput(uint8_t channel, double voltage) {
+	// TODO: truly round the output, e.g. 14.23 not 14.23000
+	double rounded = std::round(voltage * 100.0) / 100.0;
+	std::string cmd = "AO " + std::to_string(channel) + ", ";
+	cmd += std::to_string(rounded) +";";
+	char buf[1024];
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+}
+
+void Galil::AnalogInputRange(uint8_t channel, uint8_t range) {
+	std::string cmd = "AQ " + std::to_string(channel) + ", ";
+	cmd += std::to_string(range) + ";";
+	char buf[1024];
+	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 }
