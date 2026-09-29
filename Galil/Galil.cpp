@@ -26,8 +26,8 @@ Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 
 Galil::Galil(const Galil& other) {
 	// Copy constructor implementation
-	Functions = new EmbeddedFunctions(*other.Functions);
-	Functions->GOpen("192.168.0.120", &g);
+	Functions = new EmbeddedFunctions();
+	Functions->GOpen("192.168.0.120 -d", &g);
 	ControlParameters[0] = other.ControlParameters[0];
 	ControlParameters[1] = other.ControlParameters[1];
 	ControlParameters[2] = other.ControlParameters[2];
@@ -212,4 +212,9 @@ std::ostream& operator<<(std::ostream& output, Galil& galil) {
 	output << ver << std::endl << std::endl;
 
 	return output;
+}
+
+Galil& Galil::operator=(const Galil& other) {
+	Galil newGalil(other);
+	return newGalil;
 }
