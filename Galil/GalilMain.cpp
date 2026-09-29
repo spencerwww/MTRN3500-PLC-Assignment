@@ -2,12 +2,6 @@
 #include "Galil.h"
 
 int main(void) {
-	int a, b;
-	std::cin >> a >> b;
-
-	int c = a * b;
-
-	std::cout << "Result is " << c << '\n';
-
-	return 0;
+	EmbeddedFunctions funcs();
+	Galil myGalil(&funcs, "192.168.0.120 -d");
 }
