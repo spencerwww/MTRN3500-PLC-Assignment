@@ -38,7 +38,6 @@ Galil::Galil(const Galil& other) {
 Galil::~Galil() {
 	// Destructor implementation
 	Functions->GClose(g);
-	delete Functions;
 }
 
 // DIGITAL OUTPUTS
