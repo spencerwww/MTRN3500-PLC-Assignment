@@ -10,15 +10,16 @@ Implement the EmbeddedFunctions class within EmbeddedFunctions.cpp. Test this cl
 */
 
 #using <System.dll>
+#include <cstdint>
 using namespace System;
 using namespace System::Net::Sockets;
 
 ref class EmbeddedFunctions {
 public:
 	// TODO: complete this function.
-	EmbeddedFunctions() {}
-	// TODO: complete this function.
-	~EmbeddedFunctions() {}
+	EmbeddedFunctions();
+		// TODO: complete this function.
+		~EmbeddedFunctions();
 
 	/**
 	* Open a connection to a Galil Controller.
@@ -29,7 +30,7 @@ public:
 	* @throws error if one occurs.
 	*/
 	// TODO: complete this function.
-	void GOpen(String^ address, const int port) {}
+		void GOpen(String^ address, const int port);
 
 	/**
 	* Closes a connection to a Galil Controller.
@@ -39,7 +40,7 @@ public:
 	* @throws error if one occurs.
 	*/
 	// TODO: complete this function.
-	void GClose() {}
+		void GClose();
 
 	/**
 	* Performs a *command-and-response* transaction on the connection.
@@ -52,8 +53,16 @@ public:
 	* @throws error if one occurs.
 	*/
 	// TODO: complete this function.
-	String^ GCommand(String^ command) { return ""; }
+		String^ GCommand(String^ command);
 
 private:
 	// Add any additional member variables and functions as required
+	System::Net::Sockets::TcpClient^ GalilMngHndl;
+	System::Net::Sockets::NetworkStream^ GalilStream;
+	String^ IPAddress;
+	int Port;
+	array<uint8_t>^ SendData;
+	array<uint8_t>^ RecvData;
+	String^ Command;
+	String^ Response;
 };
