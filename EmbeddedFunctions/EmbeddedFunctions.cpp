@@ -35,6 +35,9 @@ String^ EmbeddedFunctions::GCommand(String^ command) {
 	array<uint8_t>^ RecvData = gcnew array<uint8_t>(2048);
 	String^ Response = "";
 
+	if (!command->EndsWith(";")) {
+		command += ";";
+	}
 	command += "\r";
 	SendData = System::Text::Encoding::ASCII->GetBytes(command);
 	GalilStream->Write(SendData, 0, SendData->Length);
