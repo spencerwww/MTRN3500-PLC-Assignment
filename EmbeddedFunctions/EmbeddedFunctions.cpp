@@ -6,8 +6,6 @@
 EmbeddedFunctions::EmbeddedFunctions() {
 	GalilMngHndl, GalilStream = nullptr;
 	Port = 0;
-	SendData = gcnew array<uint8_t>(64);
-	RecvData = gcnew array<uint8_t>(2048);
 }
 
 EmbeddedFunctions::~EmbeddedFunctions() {
@@ -33,8 +31,12 @@ void EmbeddedFunctions::GClose() {
 }
 
 String^ EmbeddedFunctions::GCommand(String^ command) {
-	Command = command + "\r";
-	SendData = System::Text::Encoding::ASCII->GetBytes(Command);
+	array<uint8_t>^ SendData = gcnew array<uint8_t>(64);
+	array<uint8_t>^ RecvData = gcnew array<uint8_t>(2048);
+	String^ Response = "";
+
+	command += "\r";
+	SendData = System::Text::Encoding::ASCII->GetBytes(command);
 	GalilStream->Write(SendData, 0, SendData->Length);
 	System::Threading::Thread::Sleep(10);
 

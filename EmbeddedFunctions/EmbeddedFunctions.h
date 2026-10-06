@@ -61,8 +61,4 @@ private:
 	System::Net::Sockets::NetworkStream^ GalilStream;
 	String^ IPAddress;
 	int Port;
-	array<uint8_t>^ SendData;
-	array<uint8_t>^ RecvData;
-	String^ Command;
-	String^ Response;
 };
