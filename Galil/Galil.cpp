@@ -26,7 +26,7 @@ Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 
 Galil::Galil(const Galil& other) {
 	// Copy constructor implementation
-	Functions = new EmbeddedFunctions();
+	Functions = new EmbeddedFunctions(true);	
 	Functions->GOpen("192.168.0.120 -d", &g);
 	ControlParameters[0] = other.ControlParameters[0];
 	ControlParameters[1] = other.ControlParameters[1];
@@ -83,8 +83,8 @@ uint16_t Galil::DigitalInput() {
 	for (uint8_t i = 0; i < 16; i++) {
 		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
 		char buf[1024];
-		response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
-		uint8_t val = atoi(buf) << i;
+		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+		uint16_t val = atoi(buf) << i;
 
 		res = res | val;
 	}
@@ -94,13 +94,13 @@ uint16_t Galil::DigitalInput() {
 
 uint8_t Galil::DigitalByteInput(bool bank) {
 	uint8_t res = 0;
-	uint8_t start = bank * 7;
+	uint8_t start = bank * 8;
 	uint8_t end = (bank + 1) * 8;
 	for (uint8_t i = start; i < end; i++) {
 		std::string cmd = "MG @IN[" + std::to_string(i) + "];";
 		char buf[1024];
-		response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
-		uint8_t val = atoi(buf) << i;
+		Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+		uint8_t val = atoi(buf) << (i - start);
 
 		res = res | val;
 	}
@@ -111,13 +111,12 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 bool Galil::DigitalBitInput(uint8_t bit) {
 	std::string cmd = "MG @IN[" + std::to_string(bit) + "];";
 	char buf[1024];
-	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 	
 	return atoi(buf);
 }
 
 bool Galil::CheckSuccessfulWrite() {
-	// TODO: Confirm intended behaviour on startup and rejected analog output
 	if (response == 0) {
 		return true;
 	}
@@ -128,7 +127,7 @@ float Galil::AnalogInput(uint8_t channel) {
 	float res = 0.0;
 	std::string cmd = "MG @AN[" + std::to_string(channel) + "];";
 	char buf[1024];
-	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 
 	return (float)atof(buf);
 }
@@ -159,7 +158,7 @@ void Galil::WriteEncoder() {
 int Galil::ReadEncoder() {
 	std::string cmd = "QE 0;";
 	char buf[1024];
-	response = Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
+	Functions->GCommand(g, cmd.c_str(), buf, sizeof(buf), nullptr);
 
 	return atoi(buf);
 }
@@ -214,6 +213,15 @@ std::ostream& operator<<(std::ostream& output, Galil& galil) {
 }
 
 Galil& Galil::operator=(const Galil& other) {
+	using namespace std;
 	Galil newGalil(other);
-	return newGalil;
+	swap(this->Functions, newGalil.Functions);
+	swap(this->g, newGalil.g);
+	swap(this->ControlParameters[0], newGalil.ControlParameters[0]);
+	swap(this->ControlParameters[1], newGalil.ControlParameters[1]);
+	swap(this->ControlParameters[2], newGalil.ControlParameters[2]);
+	swap(this->setPoint, newGalil.setPoint);
+	swap(this->response, newGalil.response);
+
+	return *this;
 }
